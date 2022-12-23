@@ -8,9 +8,9 @@
     flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
       let pkgs = nixpkgs.legacyPackages.${system}; in
       rec {
-      packages = flake-utils.lib.flattenTree {
+        packages = flake-utils.lib.flattenTree {
           qvwm = pkgs.callPackage ./pkgs;
-        };  
+        };
         devShells.default = with pkgs; (mkShell {
           nativeBuildInputs = [
             autoconf
@@ -31,6 +31,6 @@
             audiofile
             imlib
           ];
-        });      
+        });
       });
 }
