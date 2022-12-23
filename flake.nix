@@ -5,15 +5,13 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowBroken = true;
-        };
-      in
+    flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
+      let pkgs = nixpkgs.legacyPackages.${system}; in
       rec {
-        devShell = with pkgs; (mkShell {
+      packages = flake-utils.lib.flattenTree {
+          qvwm = pkgs.callPackage ./pkgs;
+        };  
+        devShells.default = with pkgs; (mkShell {
           nativeBuildInputs = [
             autoconf
             automake
@@ -33,7 +31,6 @@
             audiofile
             imlib
           ];
-        });
-        defaultPackage = pkgs.qvwm;
+        });      
       });
 }
