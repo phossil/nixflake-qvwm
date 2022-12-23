@@ -1,27 +1,39 @@
 {
-  description = "My personal NUR repository";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  outputs = { self, nixpkgs }:
-    let
-      systems = [
-        "x86_64-linux"
-        "i686-linux"
-        #"x86_64-darwin"
-        #"aarch64-linux"
-        #"armv6l-linux"
-        #"armv7l-linux"
-      ];
-      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
-    in
-    {
-      packages = forAllSystems {
+  description = "package and nixosModule of QVWM";
+  inputs = {
+    nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
         pkgs = import nixpkgs {
           inherit system;
-          modules = [
-            ./pkgs/qvwm
-            ./modules
-          ];
+          config.allowBroken = true;
         };
-      };
-    };
+      in
+      rec {
+        devShell = with pkgs; (mkShell {
+          nativeBuildInputs = [
+            autoconf
+            automake
+            bison
+            flex
+            gettext
+          ];
+          buildInputs = with xorg; [
+            libXpm
+            libSM
+            libXScrnSaver
+            libICE
+            libXext
+            libXrender
+          ] ++ [
+            alsa-lib
+            audiofile
+            imlib
+          ];
+        });
+        defaultPackage = pkgs.qvwm;
+      });
 }
