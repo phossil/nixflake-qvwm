@@ -9,29 +9,6 @@
       let pkgs = import nixpkgs { inherit system; };
       in
       rec {
-        packages = flake-utils.lib.flattenTree {
-          qvwm = pkgs.callPackage ./pkgs;
-        };
-        devShells.default = with pkgs; (mkShell {
-          nativeBuildInputs = [
-            autoconf
-            automake
-            bison
-            flex
-            gettext
-          ];
-          buildInputs = with xorg; [
-            libXpm
-            libSM
-            libXScrnSaver
-            libICE
-            libXext
-            libXrender
-          ] ++ [
-            alsa-lib
-            audiofile
-            imlib
-          ];
-        });
+        
       });
 }
