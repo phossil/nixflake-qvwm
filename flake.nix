@@ -6,7 +6,10 @@
   };
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
-      let pkgs = import nixpkgs { inherit system; }; in
+      let
+        pkgs = import nixpkgs { inherit system; };
+        nixosModules.default = import ./modules.nix;
+      in
       rec {
         packages = flake-utils.lib.flattenTree {
           qvwm = pkgs.callPackage ./pkgs;
@@ -32,5 +35,5 @@
             imlib
           ];
         });
-      });
+      } // { inherit nixosModules; });
 }
