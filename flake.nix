@@ -17,5 +17,6 @@
         checks = packages;
       })) // {
       overlays = import ./overlays;
+      nixosModules = builtins.mapAttrs (name: value: import value) (import ./nixos/modules);
     };
 }
