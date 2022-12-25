@@ -8,7 +8,5 @@
     flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
       let pkgs = import nixpkgs { inherit system; };
       in
-      rec {
-        
-      });
+      rec { });
 }
