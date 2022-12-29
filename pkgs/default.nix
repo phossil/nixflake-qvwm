@@ -10,6 +10,7 @@
 , audiofile
 , imlib
 , gettext
+, writeText
 }:
 
 let
