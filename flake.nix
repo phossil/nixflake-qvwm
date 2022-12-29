@@ -2,18 +2,28 @@
   description = "package and nixosModule of QVWM";
   inputs = {
     nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
-    flake-utils.url = "github:numtide/flake-utils";
   };
-  outputs = { self, nixpkgs, flake-utils }:
-    (flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-        };
-        qvwm = pkgs.callPackage ./pkgs { };
-      in
-      rec {
-        packages.default = qvwm;
-        checks = packages;
-      }));
+
+  outputs = inputs @ { self, nixpkgs, ... }:
+    let
+      inherit (nixpkgs) lib;
+      genSystems = lib.genAttrs [
+        "aarch64-linux"
+        "x86_64-linux"
+      ];
+
+      pkgsFor = nixpkgs.legacyPackages;
+    in
+    {
+      overlays.default = _: prev: rec {
+        qvwm = prev.callPackage ./pkgs { };
+      };
+
+      packages = genSystems (system:
+        (self.overlays.default null pkgsFor.${system})
+        // {
+          default = self.packages.${system}.qvwm;
+        });
+      #nixosModules.default = import ./nix/module.nix inputs;
+    };
 }
