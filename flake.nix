@@ -10,13 +10,10 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-        nurPkgs = import ./pkgs (pkgs // nurPkgs) pkgs;
+        qvwm = pkgs.callPackage ./pkgs { };
       in
       rec {
-        packages = flake-utils.lib.filterPackages system (flake-utils.lib.flattenTree nurPkgs);
+        packages.default = qvwm;
         checks = packages;
-      })) // {
-      overlays = import ./overlays;
-      nixosModules = builtins.mapAttrs (name: value: import value) (import ./nixos/modules);
-    };
+      }));
 }

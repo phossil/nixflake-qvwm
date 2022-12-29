@@ -13,16 +13,6 @@
 , writeText
 }:
 
-let
-  xsession = writeText "qvwm.desktop" ''
-    [Desktop Entry]
-    Type=Xsession
-    Name=QVWM
-    TryExec=@out@/bin/qvwm
-    Exec=@out@/bin/qvwm
-    Comment=Windows 9x lookalike window manager
-  '';
-in
 stdenv.mkDerivation rec {
   pname = "qvwm";
   version = "1.1.12";
@@ -57,11 +47,6 @@ stdenv.mkDerivation rec {
     imlib
   ];
 
-  postInstall = ''
-    # install desktop session with absolute paths
-    substitute ${xsession} $out/share/xsessions/qvwm.desktop --subst-var out
-  '';
-
   configureFlags = [
     #"CXXFLAGS=--std=gnu++98"
     "--enable-rmtcmd"
@@ -70,6 +55,22 @@ stdenv.mkDerivation rec {
     "--with-alsa=${lib.getLib alsa-lib}/lib/libasound.so"
     "--without-esd"
   ];
+
+  xsessionFile = writeText "qvwm.desktop"
+    ''
+      [Desktop Entry]
+      Type=Xsession
+      Name=QVWM
+      TryExec=@out@/bin/qvwm
+      Exec=@out@/bin/qvwm
+      Comment=Windows 9x lookalike window manager
+    '';
+
+  # move xsession file to appropriate path
+  postInstall = ''
+    mkdir -p $out/share/xsessions
+    substitute ${xsessionFile} $out/share/xsessions/qvwm.desktop --subst-var out
+  '';
 
   passthru.providedSessions = [ "qvwm" ];
 
