@@ -55,11 +55,14 @@ stdenv.mkDerivation rec {
     "--without-esd"
   ];
 
-  outputs = [
+  passthru.providedSessions = [ "qvwm" ];
+
+  /*
+    outputs = [
     "out"
     "man"
-  ];
-
+    ];
+  */
 
   meta = with lib; {
     description = "'Windows Classic'-like X11 window manager";
